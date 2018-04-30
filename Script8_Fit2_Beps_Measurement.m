@@ -68,7 +68,7 @@ sref = [-35 0 15 80];
   % Stress caused by magnetostriction
   tauxx = -E/(1+nu)*lamxx;
   
-  % Partial derivatives of the spline obtained from the multiscale model
+  % Partial derivatives of the spline obtained from the measurements
   phi_u = Hx*Bscale;
   phi_v = tauxx*escale;
 
