@@ -67,7 +67,7 @@ ordr = 4;
   s.sx.escale = escale;
   save ./splines/s2d_Beps s
   
-%%% Plots  
+%%% Plots
   
   % Calculate partial derivatives from the fitted spline
   sdu = fnval(fnder(s, [1 0]), {u,v});
