@@ -92,7 +92,7 @@ ordr = 4;
   % Save results
   save ./splines/s3d_Beps s
   
-%%% Plots  
+%%% Plots
   
   % Calculate partial derivatives from the fitted spline
   sdu = fnval(fnder(s, [1 0 0]), {u,v,w});
