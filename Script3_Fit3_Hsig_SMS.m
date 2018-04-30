@@ -23,14 +23,14 @@ ordr = 4;
   w = sigxy/sxy_scale;
 
   % Partial derivatives of the spline obtained from the multiscale model
-  psi_u = Bx*Hscale;
-  psi_v = lamxx*sxx_scale;
-  psi_w = 2*lamxy*sxy_scale;
+  phi_u = Bx*Hscale;
+  phi_v = lamxx*sxx_scale;
+  phi_w = 2*lamxy*sxy_scale;
 
 %%% Fit spline
   
   tic
-  s = fitSpline3(ordr, u, v, w, psi_u, psi_v, psi_w);
+  s = fitSpline3(ordr, u, v, w, phi_u, phi_v, phi_w);
   toc
 
   % Keep scaling coefficients
@@ -54,21 +54,21 @@ ordr = 4;
   % Plot all data and show errors
   figure;
     hold on;
-    plot(psi_u(:)/Hscale, 'b.-')
+    plot(phi_u(:)/Hscale, 'b.-')
     plot(sdu(:)/Hscale, 'ro-')
-    title(sprintf('B, error %g %%', 100*norm(psi_u(:)-sdu(:))/norm(psi_u(:))), 'FontSize', 14);
+    title(sprintf('B, error %g %%', 100*norm(phi_u(:)-sdu(:))/norm(phi_u(:))), 'FontSize', 14);
     legend('Multiscale', 'Spline')
   figure;
     hold on;
-    plot(psi_v(:)/sxx_scale, 'b.-')
+    plot(phi_v(:)/sxx_scale, 'b.-')
     plot(sdv(:)/sxx_scale, 'ro-')
-    title(sprintf('\\lambda_{xx}, error %g %%', 100*norm(psi_v(:)-sdv(:))/norm(psi_v(:))), 'FontSize', 14);
+    title(sprintf('\\lambda_{xx}, error %g %%', 100*norm(phi_v(:)-sdv(:))/norm(phi_v(:))), 'FontSize', 14);
     legend('Multiscale', 'Spline')
   figure;
     hold on;
-    plot(psi_w(:)/sxy_scale, 'b.-')
+    plot(phi_w(:)/sxy_scale, 'b.-')
     plot(sdw(:)/sxy_scale, 'ro-')
-    title(sprintf('\\lambda_{xy}, error %g %%', 100*norm(psi_w(:)-sdw(:))/norm(psi_w(:))), 'FontSize', 14);
+    title(sprintf('\\lambda_{xy}, error %g %%', 100*norm(phi_w(:)-sdw(:))/norm(phi_w(:))), 'FontSize', 14);
     legend('Multiscale', 'Spline')
     
    % 3-D plots with given indices of the H vector
@@ -80,7 +80,7 @@ ordr = 4;
      figure(901);
        p2 = mesh(sxx/1e6,sxy/1e6,squeeze(sdu(ih,:,:))/Hscale);
        hold on;
-       p1 = plot3(sxx(:)/1e6,sxy(:)/1e6,reshape(psi_u(ih,:,:),[],1)/Hscale, 'k.');
+       p1 = plot3(sxx(:)/1e6,sxy(:)/1e6,reshape(phi_u(ih,:,:),[],1)/Hscale, 'k.');
        xlabel('Stress {\it\sigma}_{xx} (MPa)', 'FontSize', 14);
        ylabel('Stress {\it\sigma}_{xy} (MPa)', 'FontSize', 14);
        zlabel('Flux density {\itB}_x (T)', 'FontSize', 14);
@@ -89,7 +89,7 @@ ordr = 4;
      figure(902);
        p2 = mesh(sxx/1e6,sxy/1e6,squeeze(sdv(ih,:,:))/sxx_scale*1e6);
        hold on;
-       p1 = plot3(sxx(:)/1e6,sxy(:)/1e6,reshape(psi_v(ih,:,:),[],1)/sxx_scale*1e6, 'k.');
+       p1 = plot3(sxx(:)/1e6,sxy(:)/1e6,reshape(phi_v(ih,:,:),[],1)/sxx_scale*1e6, 'k.');
        xlabel('Stress {\it\sigma}_{xx} (MPa)', 'FontSize', 14);
        ylabel('Stress {\it\sigma}_{xy} (MPa)', 'FontSize', 14);
        zlabel('Magnetostriction {\it\lambda}_{xx} (ppm)', 'FontSize', 14);
@@ -98,7 +98,7 @@ ordr = 4;
      figure(903);
        p2 = mesh(sxx/1e6,sxy/1e6,squeeze(sdw(ih,:,:))/sxy_scale*1e6);
        hold on;
-       p1 = plot3(sxx(:)/1e6,sxy(:)/1e6,reshape(psi_w(ih,:,:),[],1)/sxy_scale*1e6, 'k.');
+       p1 = plot3(sxx(:)/1e6,sxy(:)/1e6,reshape(phi_w(ih,:,:),[],1)/sxy_scale*1e6, 'k.');
        xlabel('Stress {\it\sigma}_{xx} (MPa)', 'FontSize', 14);
        ylabel('Stress {\it\sigma}_{xy} (MPa)', 'FontSize', 14);
        zlabel('Magnetostriction {\it\lambda}_{xy} (ppm)', 'FontSize', 14);

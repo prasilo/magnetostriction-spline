@@ -1,4 +1,4 @@
-% Fit bivariate spline against measurement data using B and sigma as the
+% Fit bivariate spline against measurement data using B and epsilon as the
 % variables. The script produces Figure 10 in the paper.
 
 clear all
@@ -69,13 +69,13 @@ sref = [-35 0 15 80];
   tauxx = -E/(1+nu)*lamxx;
   
   % Partial derivatives of the spline obtained from the multiscale model
-  psi_u = Hx*Bscale;
-  psi_v = tauxx*escale;
+  phi_u = Hx*Bscale;
+  phi_v = tauxx*escale;
 
 %%% Fit spline
 
   tic
-  s = fitSpline2(4, u, v, psi_u, psi_v);
+  s = fitSpline2(4, u, v, phi_u, phi_v);
   toc
   
 %%% Plots
@@ -87,15 +87,15 @@ sref = [-35 0 15 80];
   % Plot all data and show errors
   figure;
     hold on;
-    plot(psi_u(:)/Bscale, 'b.-')
+    plot(phi_u(:)/Bscale, 'b.-')
     plot(sdu(:)/Bscale, 'ro-')
-    title(sprintf('B, error %g %%', 100*norm(psi_u(:)-sdu(:))/norm(psi_u(:))), 'FontSize', 14);
+    title(sprintf('B, error %g %%', 100*norm(phi_u(:)-sdu(:))/norm(phi_u(:))), 'FontSize', 14);
     legend('Measured', 'Spline')
   figure;
     hold on;
-    plot(psi_v(:)/escale, 'b.-')
+    plot(phi_v(:)/escale, 'b.-')
     plot(sdv(:)/escale, 'ro-')
-    title(sprintf('{\\tau}_{xx}, error %g %%', 100*norm(psi_v(:)-sdv(:))/norm(psi_v(:))), 'FontSize', 14);
+    title(sprintf('{\\tau}_{xx}, error %g %%', 100*norm(phi_v(:)-sdv(:))/norm(phi_v(:))), 'FontSize', 14);
     legend('Measured', 'Spline')
 
   % Plot B(H) and lambda(B) curves with more points in B to see possible

@@ -1,9 +1,9 @@
 % Compare spline-based invariant model and simplified multiscale model
 % under shear stress. The script produces Figure 9 in the paper.
 
-close all;
-clear all;
-clc;
+close all
+clear all
+clc
 addpath util util/functions_Hsig
 
 mu0 = 4*pi*1e-7;

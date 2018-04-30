@@ -1,5 +1,5 @@
 % Fit trivariate spline against the multiscale model data using B and
-% epsilon as the variables. The script produces Figure 5 in the paper.
+% epsilon as the variables. The script produces Figure 7 in the paper.
 
 clear all
 close all
@@ -74,14 +74,14 @@ ordr = 4;
   w = w/exy_scale;
 
   % Partial derivatives of the spline obtained from the multiscale model
-  psi_u = Hx*Bscale;
-  psi_v = -E/(1+nu)*lamxx*exx_scale;
-  psi_w = -2*E/(1+nu)*lamxy*exy_scale;
+  phi_u = Hx*Bscale;
+  phi_v = -E/(1+nu)*lamxx*exx_scale;
+  phi_w = -2*E/(1+nu)*lamxy*exy_scale;
 
 %%% Fit spline
   
   tic
-  s = fitSpline3(ordr, u, v, w, psi_u, psi_v, psi_w);
+  s = fitSpline3(ordr, u, v, w, phi_u, phi_v, phi_w);
   toc
   
   % Keep scaling coefficients
@@ -102,21 +102,21 @@ ordr = 4;
   % Plot all data and show errors
   figure;
     hold on;
-    plot(psi_u(:)/Bscale, 'b.-')
+    plot(phi_u(:)/Bscale, 'b.-')
     plot(sdu(:)/Bscale, 'ro-')
-    title(sprintf('H, error %g %%', 100*norm(psi_u(:)-sdu(:))/norm(psi_u(:))), 'FontSize', 14);
+    title(sprintf('H, error %g %%', 100*norm(phi_u(:)-sdu(:))/norm(phi_u(:))), 'FontSize', 14);
     legend('Multiscale', 'Spline')
   figure;
     hold on;
-    plot(psi_v(:)/exx_scale, 'b.-')
+    plot(phi_v(:)/exx_scale, 'b.-')
     plot(sdv(:)/exx_scale, 'ro-')
-    title(sprintf('\\sigma_{xx}, error %g %%', 100*norm(psi_v(:)-sdv(:))/norm(psi_v(:))), 'FontSize', 14);
+    title(sprintf('\\sigma_{xx}, error %g %%', 100*norm(phi_v(:)-sdv(:))/norm(phi_v(:))), 'FontSize', 14);
     legend('Multiscale', 'Spline')
   figure;
     hold on;
-    plot(psi_w(:)/exy_scale, 'b.-')
+    plot(phi_w(:)/exy_scale, 'b.-')
     plot(sdw(:)/exy_scale, 'ro-')
-    title(sprintf('\\sigma_{xy}, error %g %%', 100*norm(psi_w(:)-sdw(:))/norm(psi_w(:))), 'FontSize', 14);
+    title(sprintf('\\sigma_{xy}, error %g %%', 100*norm(phi_w(:)-sdw(:))/norm(phi_w(:))), 'FontSize', 14);
     legend('Multiscale', 'Spline')
 
    % 3-D plots with given indices of the B vector
@@ -130,7 +130,7 @@ ordr = 4;
      figure(901);
        p2 = mesh(vv,ww,squeeze(sdu(ib,:,:))/Bscale);
        hold on;
-       p1 = plot3(vv(:),ww(:),reshape(psi_u(ib,:,:),[],1)/Bscale, 'k.');
+       p1 = plot3(vv(:),ww(:),reshape(phi_u(ib,:,:),[],1)/Bscale, 'k.');
        xlabel('Variable {\itv} (ppm)', 'FontSize', 14);
        ylabel('Variable {\itw} (ppm)', 'FontSize', 14);
        zlabel('Field strength {\itH}_x (T)', 'FontSize', 14);
@@ -139,7 +139,7 @@ ordr = 4;
      figure(902);
        p2 = mesh(vv,ww,-squeeze(sdv(ib,:,:))/exx_scale/1e6);
        hold on;
-       p1 = plot3(vv(:),ww(:),-reshape(psi_v(ib,:,:),[],1)/exx_scale/1e6, 'k.');
+       p1 = plot3(vv(:),ww(:),-reshape(phi_v(ib,:,:),[],1)/exx_scale/1e6, 'k.');
        xlabel('Variable {\itv} (ppm)', 'FontSize', 14);
        ylabel('Variable {\itw} (ppm)', 'FontSize', 14);
        zlabel('Stress {\it\tau}_{xx} (MPa)', 'FontSize', 14);
@@ -148,7 +148,7 @@ ordr = 4;
      figure(903);
        p2 = mesh(vv,ww,-0.5*squeeze(sdw(ib,:,:))/exy_scale/1e6);
        hold on;
-       p1 = plot3(vv(:),ww(:),-0.5*reshape(psi_w(ib,:,:),[],1)/exy_scale/1e6, 'k.');
+       p1 = plot3(vv(:),ww(:),-0.5*reshape(phi_w(ib,:,:),[],1)/exy_scale/1e6, 'k.');
        xlabel('Variable {\itv} (ppm)', 'FontSize', 14);
        ylabel('Variable {\itw} (ppm)', 'FontSize', 14);
        zlabel('Stress {\it\tau}_{xy} (MPa)', 'FontSize', 14);

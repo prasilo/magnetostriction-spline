@@ -21,13 +21,13 @@ ordr = 4;
   v = sigxx/sscale;
 
   % Partial derivatives of the spline obtained from the multiscale model
-  psi_u = Bx*Hscale;
-  psi_v = lamxx*sscale;
+  phi_u = Bx*Hscale;
+  phi_v = lamxx*sscale;
 
 %%% Fit spline
   
   tic
-  s = fitSpline2(ordr, u, v, psi_u, psi_v);
+  s = fitSpline2(ordr, u, v, phi_u, phi_v);
   toc
   
   % Keep scaling coefficients
@@ -48,15 +48,15 @@ ordr = 4;
   % Plot all data and show errors
   figure;
     hold on;
-    plot(psi_u(:)/Hscale, 'b.-')
+    plot(phi_u(:)/Hscale, 'b.-')
     plot(sdu(:)/Hscale, 'ro-')
-    title(sprintf('B, error %g %%', 100*norm(psi_u(:)-sdu(:))/norm(psi_u(:))), 'FontSize', 14);
+    title(sprintf('B, error %g %%', 100*norm(phi_u(:)-sdu(:))/norm(phi_u(:))), 'FontSize', 14);
     legend('Multiscale', 'Spline')
   figure;
     hold on;
-    plot(psi_v(:)/sscale, 'b.-')
+    plot(phi_v(:)/sscale, 'b.-')
     plot(sdv(:)/sscale, 'ro-')
-    title(sprintf('{\\lambda}_{xx}, error %g %%', 100*norm(psi_v(:)-sdv(:))/norm(psi_v(:))), 'FontSize', 14);
+    title(sprintf('{\\lambda}_{xx}, error %g %%', 100*norm(phi_v(:)-sdv(:))/norm(phi_v(:))), 'FontSize', 14);
     legend('Multiscale', 'Spline')
 
   % 3-D plots
@@ -64,7 +64,7 @@ ordr = 4;
   figure;
     p2 = mesh(hh,ss/1e6,sdu/Hscale);
     hold on;
-    p1 = plot3(hh(:),ss(:)/1e6,psi_u(:)/Hscale, 'k.');
+    p1 = plot3(hh(:),ss(:)/1e6,phi_u(:)/Hscale, 'k.');
     xlabel('Field strength {\itH} (A/m)', 'FontSize', 14);
     ylabel('Stress {\it\sigma}_{xx} (MPa)', 'FontSize', 14);
     zlabel('Flux density {\itB}_x (T)', 'FontSize', 14);
@@ -72,7 +72,7 @@ ordr = 4;
   figure;
     p2 = mesh(hh,ss/1e6,sdv/sscale*1e6);
     hold on;
-    p1 = plot3(hh(:),ss(:)/1e6,psi_v(:)/sscale*1e6, 'k.');
+    p1 = plot3(hh(:),ss(:)/1e6,phi_v(:)/sscale*1e6, 'k.');
     xlabel('Field strength {\itH} (A/m)', 'FontSize', 14);
     ylabel('Stress {\it\sigma}_{xx} (MPa)', 'FontSize', 14);
     zlabel('Magnetostriction {\it\lambda}_{xx} (ppm)', 'FontSize', 14);

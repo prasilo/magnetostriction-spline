@@ -1,5 +1,5 @@
 % Fit bivariate spline against the multiscale model data using B and
-% epsilon as the variables. The script produces Figure 5 in the paper.
+% epsilon as the variables. The script produces Figure 6 in the paper.
 
 clear all
 close all
@@ -51,13 +51,13 @@ ordr = 4;
   v = v/escale;
 
   % Partial derivatives of the spline obtained from the multiscale model
-  psi_u = Hx*Bscale;
-  psi_v = -E/(1+nu)*lamxx*escale;
+  phi_u = Hx*Bscale;
+  phi_v = -E/(1+nu)*lamxx*escale;
   
 %%% Fit spline
 
   tic
-  s = fitSpline2(ordr, u, v, psi_u, psi_v);
+  s = fitSpline2(ordr, u, v, phi_u, phi_v);
   toc
   
   % Keep scaling coefficients
@@ -76,15 +76,15 @@ ordr = 4;
   % Plot all data and show errors
   figure;
     hold on;
-    plot(psi_u(:)/Bscale, 'b.-')
+    plot(phi_u(:)/Bscale, 'b.-')
     plot(sdu(:)/Bscale, 'ro-')
-    title(sprintf('H, error %g %%', 100*norm(psi_u(:)-sdu(:))/norm(psi_u(:))), 'FontSize', 14);
+    title(sprintf('H, error %g %%', 100*norm(phi_u(:)-sdu(:))/norm(phi_u(:))), 'FontSize', 14);
     legend('Multiscale', 'Spline')
   figure;
     hold on;
-    plot(psi_v(:)/escale, 'b.-')
+    plot(phi_v(:)/escale, 'b.-')
     plot(sdv(:)/escale, 'ro-')
-    title(sprintf('\\sigma_{xx}, error %g %%', 100*norm(psi_v(:)-sdv(:))/norm(psi_v(:))), 'FontSize', 14);
+    title(sprintf('\\sigma_{xx}, error %g %%', 100*norm(phi_v(:)-sdv(:))/norm(phi_v(:))), 'FontSize', 14);
     legend('Multiscale', 'Spline')
     
   % 3-D plots
@@ -92,7 +92,7 @@ ordr = 4;
   figure;
     p2 = mesh(bb,ee*1e6,sdu/Bscale);
     hold on;
-    p1 = plot3(bb(:),ee(:)*1e6,psi_u(:)/Bscale, 'k.');
+    p1 = plot3(bb(:),ee(:)*1e6,phi_u(:)/Bscale, 'k.');
     xlabel('Flux density {\itB}_x (T)', 'FontSize', 14);
     ylabel('Variable {\itv} (ppm)', 'FontSize', 14);
     zlabel('Field strength {\itH}_x (A/m)', 'FontSize', 14);
@@ -100,7 +100,7 @@ ordr = 4;
   figure;
     p2 = mesh(bb,ee*1e6, -sdv/escale/1e6);
     hold on;
-    p1 = plot3(bb(:),ee(:)*1e6, -psi_v(:)/escale/1e6, 'k.');
+    p1 = plot3(bb(:),ee(:)*1e6, -phi_v(:)/escale/1e6, 'k.');
     xlabel('Flux density {\itB}_x (T)', 'FontSize', 14);
     ylabel('Variable {\itv} (ppm)', 'FontSize', 14);
     zlabel('Stress {\it\tau}_{xx} (MPa)', 'FontSize', 14);
