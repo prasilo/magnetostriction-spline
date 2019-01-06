@@ -35,9 +35,9 @@ The attached MATLAB scripts produce the results presented in the manuscript “F
 
 - Script9_Fit2_Hsig_SMS_error.m
 
-  The script fits the bivariate spline against the data produced with the SMS model using the magnetic field strength **_H_** and stress **_σ_** as the state variables similarly to Script2_Fit2_Hsig_SMS.m., but adding some artificial numerical error to the SMS results. It produces the results presented in Section 3.2 and Figure 8 (a).
+  The script fits the bivariate spline against the data produced with the SMS model using the magnetic field strength **_H_** and stress **_σ_** as the state variables similarly to Script2_Fit2_Hsig_SMS.m, but adding some artificial numerical error to the SMS results. It produces the results presented in Section 3.2 and Figure 8 (a).
 
 - Script10_Fit3_Hsig_SMS_error.m
 
-  The script fits the trivariate spline against the data produced with the SMS model using **_H_** and **_σ_** as the state variables similarly to Script3_Fit3_Hsig_SMS.m., but adding some artificial numerical error to the SMS results. It produces the results presented in Section 3.2 and Figure 8 (b).
+  The script fits the trivariate spline against the data produced with the SMS model using **_H_** and **_σ_** as the state variables similarly to Script3_Fit3_Hsig_SMS.m, but adding some artificial numerical error to the SMS results. It produces the results presented in Section 3.2 and Figure 8 (b).
   
