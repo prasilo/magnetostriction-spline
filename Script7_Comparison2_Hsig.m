@@ -1,9 +1,9 @@
 % Compare spline-based invariant model and simplified multiscale model
-% under shear stress. The script produces Figure 9 in the paper.
+% under shear stress. The script produces Figure 10 in the paper.
 
-close all
-clear all
-clc
+close all;
+clear all;
+clc;
 addpath util util/functions_Hsig
 
 mu0 = 4*pi*1e-7;
@@ -25,7 +25,7 @@ for flag3 = 0 : 1
   else
     load ./splines/s3d_Hsig;
     style = '-';
-  end;
+  end
 
   % Starting stress
   sig0 = [0 1 0; 1 0 0; 0 0 0]*50e6;
@@ -75,7 +75,7 @@ for flag3 = 0 : 1
     lxy_i_xt(i) = ll(6);
     lyz_i_xt(i) = ll(4);
     lzx_i_xt(i) = ll(5);
-  end;
+  end
 
   % Plots
   figure(1);
@@ -112,7 +112,7 @@ for flag3 = 0 : 1
     xlabel('Angle {\it\theta} (°)', 'FontSize', 14);  
     ylabel('Magnetostriction (ppm)', 'FontSize', 14);  
   drawnow;
-end;
+end
 
 % Set legends etc.
 figure(1)

@@ -1,5 +1,5 @@
 % Compare spline-based invariant model and simplified multiscale model
-% under different multiaxial stresses. The script produces Figure 8 in the
+% under different multiaxial stresses. The script produces Figure 9 in the
 % paper.
 
 clear all
@@ -25,7 +25,7 @@ for flag3 = 0 : 1
     load ./splines/s2d_Hsig;
   else
     load ./splines/s3d_Hsig;
-  end;
+  end
 
   % Different multiaxial stresses
   sig = {}; slab = {}; mar = {};
@@ -40,32 +40,34 @@ for flag3 = 0 : 1
   for isig = 1 : length(sig)
 
     % Run multiscale model (this takes some time)
-    fprintf('Calculating multiscale model results...\n')
-    for is = 1:length(sval)
-      fprintf('%d / %d\n', is, length(sval));
+    if flag3 == 0
+      fprintf('Calculating multiscale model results...\n')
+      for is = 1:length(sval)
+        fprintf('%d / %d\n', is, length(sval));
 
-      % Stress tensor
-      ss = sig{isig}(ivt)*sval(is);
+        % Stress tensor
+        ss = sig{isig}(ivt)*sval(is);
 
-      % Evaluate multiscale model
-      [bb,ll] = smsfunc(H, ss);
+        % Evaluate multiscale model
+        [bb,ll] = smsfunc(H, ss);
 
-      % Relative permeability
-      mur_ms(is,isig) = bb(1)/H(1)/mu0;
-      lxx_ms(is,isig) = ll(1,1);
-      lyy_ms(is,isig) = ll(2,2);
-      lzz_ms(is,isig) = ll(3,3);
-    end;
+        % Relative permeability
+        mur_ms(is,isig) = bb(1)/H(1)/mu0;
+        lxx_ms(is,isig) = ll(1,1);
+        lyy_ms(is,isig) = ll(2,2);
+        lzz_ms(is,isig) = ll(3,3);
+      end
+    end
 
     % Run invariant model
-    [bb,ll]= ifunc_Hsig(s, H*ones(size(sval)), sig{isig}'*sval);
+    [bb,ll]= ifunc_Hsig(s, H*ones(size(sval)), sig{isig}'*sval, 0);
     mur_i(:,isig) = bb(1,:)./H(1)/mu0;
     lxx_i(:,isig) = ll(1,:);
     lyy_i(:,isig) = ll(2,:);
     lzz_i(:,isig) = ll(3,:);
 
     % Run invariant model with extrapolation
-    [bb,ll]= ifunc_Hsig(s.sx, H*ones(size(sval)), sig{isig}'*sval);
+    [bb,ll]= ifunc_Hsig(s.sx, H*ones(size(sval)), sig{isig}'*sval, 1);
     mur_i_xt(:,isig) = bb(1,:)./H(1)/mu0;
     lxx_i_xt(:,isig) = ll(1,:);
     lyy_i_xt(:,isig) = ll(2,:);
@@ -110,9 +112,9 @@ for flag3 = 0 : 1
         plot(sval/1e6,lzz_i(:,isig)*1e6,'-', 'Color', get(p(isig), 'Color'))
         plot(sval/1e6,lzz_i_xt(:,isig)*1e6,'--', 'Color', get(p(isig), 'Color'))
       drawnow;
-    end;
-  end;
-end;
+    end
+  end
+end
 
 % Set legends etc.
 figure(1);

@@ -25,7 +25,7 @@ for is = 1:ns
     lamxx(ih,is) = lam(1,1);
     lamyy(ih,is) = lam(2,2);
     lamzz(ih,is) = lam(3,3);
-  end;
+  end
 
   % Plot
   figure(10);
@@ -36,7 +36,7 @@ for is = 1:ns
     plot(Bx(:,is), lamxx(:,is)-lamxx(1,is),'.-', 'Color', col(is,:))
     hold on
   drawnow;
-end;
+end
 save .\data\sms_data2 Hx sigxx Bx lamxx lamyy lamzz
   
 % Trivariate data
@@ -64,7 +64,7 @@ for isxx = 1:nsxx
       lamxy(ih,isxx,isxy) = lam(1,2);
       lamyy(ih,isxx,isxy) = lam(2,2);
       lamzz(ih,isxx,isxy) = lam(3,3);
-    end;
+    end
 
     % Plot
     figure(100+isxx);
@@ -78,6 +78,6 @@ for isxx = 1:nsxx
       plot(Bx(:,isxx,isxy), lamxy(:,isxx,isxy)-lamxy(1,isxx,isxy),'.-', 'Color', col(isxy,:))
       hold on
     drawnow;
-  end;
-end;
+  end
+end
 save .\data\sms_data3 Hx sigxx sigxy Bx lamxx lamxy lamyy lamzz

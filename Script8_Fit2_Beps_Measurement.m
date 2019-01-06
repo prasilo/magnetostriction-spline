@@ -1,5 +1,5 @@
-% Fit bivariate spline against measurement data using B and epsilon as the
-% variables. The script produces Figure 10 in the paper.
+% Fit bivariate spline against measurement data using B and sigma as the
+% variables. The script produces Figure 11 in the paper.
 
 clear all
 close all
@@ -29,13 +29,13 @@ sref = [-35 0 15 80];
   for i = 1 : length(ind)
     figure(1);
       plot(Hx(1:5:end,ind(i))', Bx(1:5:end)', style{i}); hold on;
-      xlabel('Field strength {\itH} (A/m)', 'FontSize', 14);
+      xlabel('Field strength {\itH}_x (A/m)', 'FontSize', 14);
       ylabel('Flux density {\itB}_x (T)', 'FontSize', 14);
     figure(2);
       plot(Hx(1:5:end,ind(i))', lamxx(1:5:end,ind(i))'*1e6, style{i}); hold on;
-      xlabel('Field strength {\itH} (A/m)', 'FontSize', 14);
+      xlabel('Field strength {\itH}_x (A/m)', 'FontSize', 14);
       ylabel('Magnetostriction {\it\lambda}_{xx} (ppm)', 'FontSize', 14);
-  end;
+  end
   figure(1); leg = legend(num2strcell(sref, '{\it\sigma}_{xx} =', ' MPa'), 'Location', 'SouthEast'); set(leg, 'FontSize', 12); legend boxoff
   drawnow;
 
@@ -53,29 +53,29 @@ sref = [-35 0 15 80];
     Hx2(i,:)    = interp1(vp(i,:), Hx(i,:),    v, 'pchip', 'extrap');
     sigxx2(i,:) = interp1(vp(i,:), sigxx,      v, 'pchip', 'extrap');
     lamxx2(i,:) = interp1(vp(i,:), lamxx(i,:), v, 'pchip', 'extrap');
-  end;
+  end
   Hx = Hx2;
   sigxx = sigxx2;
   lamxx = lamxx2;
   clear vp sigxx2 lamxx2 Hx2
 
   % Auxiliary variables with scaling
-  Bscale = max(Bx);
-  escale = max(abs(v));
+  Bscale = 1/max(abs(Hx(:)));
+  escale = 1/max(lamxx(:)*E/(1+nu));
   u = Bx/Bscale;
   v = v/escale;
 
   % Stress caused by magnetostriction
   tauxx = -E/(1+nu)*lamxx;
   
-  % Partial derivatives of the spline obtained from the measurements
-  phi_u = Hx*Bscale;
-  phi_v = tauxx*escale;
+  % Partial derivatives of the spline obtained from the multiscale model
+  psi_u = Hx*Bscale;
+  psi_v = tauxx*escale;
 
 %%% Fit spline
 
   tic
-  s = fitSpline2(4, u, v, phi_u, phi_v);
+  s = fitSpline2(4, u, v, psi_u, psi_v, 1);
   toc
   
 %%% Plots
@@ -84,18 +84,25 @@ sref = [-35 0 15 80];
   sdu = fnval(fnder(s, [1 0]), {u,v});
   sdv = fnval(fnder(s, [0 1]), {u,v});
 
+  % Errors
+  erru = norm(psi_u(:)-sdu(:))/norm(psi_u(:));
+  errv = norm(psi_v(:)-sdv(:))/norm(psi_v(:));
+  fprintf('Errors: \n');
+  fprintf(' Hx:    %.3g %%\n', erru*100);
+  fprintf(' tauxx: %.3g %%\n', errv*100);
+
   % Plot all data and show errors
   figure;
     hold on;
-    plot(phi_u(:)/Bscale, 'b.-')
+    plot(psi_u(:)/Bscale, 'b.-')
     plot(sdu(:)/Bscale, 'ro-')
-    title(sprintf('B, error %g %%', 100*norm(phi_u(:)-sdu(:))/norm(phi_u(:))), 'FontSize', 14);
+    title(sprintf('B, error %g %%', 100*erru), 'FontSize', 14);
     legend('Measured', 'Spline')
   figure;
     hold on;
-    plot(phi_v(:)/escale, 'b.-')
+    plot(psi_v(:)/escale, 'b.-')
     plot(sdv(:)/escale, 'ro-')
-    title(sprintf('{\\tau}_{xx}, error %g %%', 100*norm(phi_v(:)-sdv(:))/norm(phi_v(:))), 'FontSize', 14);
+    title(sprintf('{\\tau}_{xx}, error %g %%', 100*errv), 'FontSize', 14);
     legend('Measured', 'Spline')
 
   % Plot B(H) and lambda(B) curves with more points in B to see possible
@@ -116,14 +123,14 @@ sref = [-35 0 15 80];
       p1(i) = plot(Hx0(1:5:end,ind(i)), Bx(1:5:end), style{i}); hold on;
       plot(sdu/Bscale, uu*Bscale, '-', 'Color', get(p1(i), 'color')); hold on;
       xlabel('Field strength {\itH}_x (A/m)', 'FontSize', 14);
-      ylabel('Flux density {\itB} (T)', 'FontSize', 14);
+      ylabel('Flux density {\itB}_x (T)', 'FontSize', 14);
     figure(12)
     set(gca, 'ColorOrderIndex', i);
       p12 = plot(Bx(1:5:end)', lamxx0(1:5:end,ind(i))*1e6, style{i}); hold on;
       plot(uu*Bscale, -(1+nu)/E*sdv/escale*1e6, '-', 'Color', get(p12, 'color')); hold on;
-      xlabel('Flux density {\itB} (T)', 'FontSize', 14);
+      xlabel('Flux density {\itB}_x (T)', 'FontSize', 14);
       ylabel('Magnetostriction {\it\lambda}_{xx} (ppm)', 'FontSize', 14);
-  end;    
+  end
 
   % Set legend
   figure(11)
