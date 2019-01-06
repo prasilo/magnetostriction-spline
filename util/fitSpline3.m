@@ -1,16 +1,21 @@
-function s = fitSpline3(ordr, u, v, w, psi_u, psi_v, psi_w, weight_u, weight_v, weight_w)
+function s = fitSpline3(ordr, u, v, w, psi_u, psi_v, psi_w, flag_rank, weight_u, weight_v, weight_w)
 % Fit trivariate spline based on given grid points and partial derivatives
 
-  % For weighting u, v or w in the least-squares fitting
+  % Calculate ranks or not (may be slow)
   if nargin < 8
-    weight_u = 1;
-  end;
+    flag_rank = 0;
+  end
+  
+  % For weighting u, v or w in the least-squares fitting
   if nargin < 9
-    weight_v = 1;
-  end;
+    weight_u = 1;
+  end
   if nargin < 10
+    weight_v = 1;
+  end
+  if nargin < 11
     weight_w = 1;
-  end;
+  end
 
   % Number of points
   Nu = length(u);
@@ -87,24 +92,34 @@ function s = fitSpline3(ordr, u, v, w, psi_u, psi_v, psi_w, weight_u, weight_v, 
   wmat = sparse(wmat);
   wrhs(row,1) = sparse(psi_w(row));
       
-  % Instead of solving A(i,:)*x = bi, solve A(i,:)/bi*x = 1,
-  % so that all points have the same weight (except if bi = 0)
-  oo = ones(1,size(umat,2));
-  sc = 0*urhs+1; ind = (abs(urhs) > 1e-6); sc(ind,1) = urhs(ind); urhs(ind) = 1; sc = sc*oo; umat = umat./sc;
-  sc = 0*vrhs+1; ind = (abs(vrhs) > 1e-6); sc(ind,1) = vrhs(ind); vrhs(ind) = 1; sc = sc*oo; vmat = vmat./sc;
-  sc = 0*wrhs+1; ind = (abs(wrhs) > 1e-6); sc(ind,1) = wrhs(ind); wrhs(ind) = 1; sc = sc*oo; wmat = wmat./sc;
+  % Create matrix an right-hand side for the least-squuares problem
   mat = [weight_u*umat; weight_v*vmat; weight_w*wmat];
   rhs = [weight_u*urhs; weight_v*vrhs; weight_w*wrhs];
   
   % Since only the derivatives are fitted, the value of one coefficient has
-  % to be fixed
-  mat(1,:) = 0; mat(1,1) = 1; rhs(1) = 1;
+  % to be fixed -> remove one column. Get also an estimate of the ranks and
+  % condition numbers before and after removing the column.
+  if flag_rank
+    kb = condest(mat'*mat);
+    rb = rank(full(mat'));
+  end
+  mat(:,1) = [];
+  if flag_rank
+    ka = condest(mat'*mat);
+    ra = rank(full(mat'));
+      
+    % Display ranks and condition numbers
+    fprintf('Full matrix: rb = %d, kb = %.3g, one column eliminated: ra = %d, ka = %.3g. ', rb, kb, ra, ka);   
+  end
+  
+  % Solve spline coefficients
+  c = lsqlin(mat'*mat, mat'*rhs);
 
-  % Solve spline coefficients and change to pp-form
-  s.coefs = reshape(full(lsqlin(mat,rhs)), size(s.coefs));
+  % Set first coefficient to zero and create spline in pp-form
+  c = [0; c];
+  s.coefs = reshape(full(c), size(s.coefs));
   s = fn2fm(s, 'pp');
-
-  % Extrapolate (separate spline) (3 means that the energy is extrapolated
-  % as a second-order polynomial), change to pp-form
+  
+  % Separate spline for extrapolation
   s.sx = fnxtr(s,[3 3 3]);
-  s.sx = fn2fm(s.sx, 'pp');
+  

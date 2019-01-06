@@ -1,6 +1,11 @@
-function [B,lam] = ifunc_Hsig(s, H, sig)
+function [B,lam] = ifunc_Hsig(s, H, sig, flag_extr)
 % Evaluate the spline-based invariant model with H and sigma as the state
 % variables
+
+  % Don't extrapolate by default
+  if nargin < 4
+    flag_extr = 0;
+  end
 
   % Check if 2- or 3-variate spline is provided
   if length(s.order) == 2    
@@ -12,7 +17,7 @@ function [B,lam] = ifunc_Hsig(s, H, sig)
     Hscale = s.Hscale;
     sxx_scale = s.sxx_scale;
     sxy_scale = s.sxy_scale;
-  end;
+  end
 
   % Input variables
   Hx = H(1,:);
@@ -31,14 +36,14 @@ function [B,lam] = ifunc_Hsig(s, H, sig)
   v = fv(vars{:})/sxx_scale;
   if flag3
     w = fw(vars{:})/sxy_scale;
-  end;
+  end
 
   % Derivatives with respect to H
   [dudhx,dudhy,dudhz] = fdudh(vars{:});
   [dvdhx,dvdhy,dvdhz] = fdvdh(vars{:});
   if flag3
     [dwdhx,dwdhy,dwdhz] = fdwdh(vars{:});
-  end;
+  end
   dudhx = dudhx/Hscale;
   dudhy = dudhy/Hscale;
   dudhz = dudhz/Hscale;
@@ -49,14 +54,14 @@ function [B,lam] = ifunc_Hsig(s, H, sig)
     dwdhx = dwdhx/sxy_scale;
     dwdhy = dwdhy/sxy_scale;
     dwdhz = dwdhz/sxy_scale;
-  end;
+  end
 
   % Derivatives with respect to sigma
   [dudsxx,dudsyy,dudszz,dudsyz,dudszx,dudsxy] = fduds(vars{:});
   [dvdsxx,dvdsyy,dvdszz,dvdsyz,dvdszx,dvdsxy] = fdvds(vars{:});
   if flag3
     [dwdsxx,dwdsyy,dwdszz,dwdsyz,dwdszx,dwdsxy] = fdwds(vars{:});
-  end;
+  end
   dudsxx = dudsxx/Hscale;
   dudsyy = dudsyy/Hscale;
   dudszz = dudszz/Hscale;
@@ -84,7 +89,7 @@ function [B,lam] = ifunc_Hsig(s, H, sig)
     dwdsyz(w == 0) = 0;
     dwdszx(w == 0) = 0;
     dwdsxy(w == 0) = 0;
-  end;
+  end
 
   % Evaluate spline
   if flag3 == 0
@@ -126,20 +131,24 @@ function [B,lam] = ifunc_Hsig(s, H, sig)
     lyz = (pu.*dudsyz + pv.*dvdsyz + pw.*dwdsyz);
     lzx = (pu.*dudszx + pv.*dvdszx + pw.*dwdszx);
     lxy = (pu.*dudsxy + pv.*dvdsxy + pw.*dwdsxy);  
-  end;
+  end
 
   % Output vectors
   B = [Bx; By; Bz];
   lam = [lxx; lyy; lzz; lyz; lzx; lxy];
 
   % Extrapolated values to nan
-  iu = (u < min(s.breaks{1})) | (u > max(s.breaks{1})); 
-  iv = (v < min(s.breaks{2})) | (v > max(s.breaks{2})); 
-  if flag3
-    iw = (w < min(s.breaks{3})) | (w > max(s.breaks{3})); 
-    ixtr = (iu | iv | iw);
-  else
-    ixtr = (iu | iv);
-  end;
-  B(:,ixtr) = nan;
-  lam(:,ixtr) = nan;
+  if ~flag_extr
+
+    iu = (u < min(s.breaks{1})) | (u > max(s.breaks{1})); 
+    iv = (v < min(s.breaks{2})) | (v > max(s.breaks{2})); 
+    if flag3
+      iw = (w < min(s.breaks{3})) | (w > max(s.breaks{3})); 
+      ixtr = (iu | iv | iw);
+    else
+      ixtr = (iu | iv);
+    end
+    B(:,ixtr) = nan;
+    lam(:,ixtr) = nan;
+  end
+  

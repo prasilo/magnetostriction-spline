@@ -1,10 +1,10 @@
-function [B,lam] = bfunc(H, sig)
+function [B,lam] = smsfunc(H, sig)
 % [1]	L. Daniel, O. Hubert, M. Rekik, A Simplified 3D Constitutive Law for Magneto-Mechanical Behavior, IEEE Trans. Magn. 51(3) (2015), 7300704.
 
   % From Voigt to tensor
   if min(size(sig)) == 1
     sig = sig([1 6 5; 6 2 4; 5 4 3]);
-  end;
+  end
 
   % Parameters
   mu0 = 4*pi*1e-7;
