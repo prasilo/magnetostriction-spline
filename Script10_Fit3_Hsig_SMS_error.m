@@ -51,9 +51,6 @@ ordr = 4;
     s.sx.sxx_scale = sxx_scale;
     s.sx.sxy_scale = sxy_scale;
 
-    % Save results
-    save ./splines/s3d_Hsig s
-
   %%% Plots  
 
     % Calculate partial derivatives from the fitted spline
